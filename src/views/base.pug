@@ -1,0 +1,16 @@
+doctype html 
+html(lang="ko")
+  head 
+    <link rel="stylesheet" href="https://unpkg.com/mvp.css"> 
+    title #{pageTitle} | ParkPhillips
+    //- 변수값을 컨트롤러에서 정의
+  body
+    header
+      nav
+        ul 
+          li 
+            a(href="/login") Login
+      h1=pageTitle
+    main 
+      block content
+    include partials/footer.pug

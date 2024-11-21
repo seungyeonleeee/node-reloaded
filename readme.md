@@ -21,8 +21,10 @@
 /search -> Search
 
 / users로 시작하는 페이지 라우팅 => 라우터
+/users/logout-> Logout User
 /users/edit-> Edit User
-/users/delete -> Delete User
+/users/remove -> Remove User
+/users/:id -> Segment User (본인 id에 맞는 정보)
 
 / video로 시작하는 페이지 라우팅 => 라우터
 /video/watch -> Watch Video
