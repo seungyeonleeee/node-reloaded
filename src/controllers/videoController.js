@@ -1,34 +1,53 @@
 import { response } from "express";
+import Video from "../models/video";
 
-const videos = [
-  {
-    id: 1,
-    title: "First Video",
-    createdAt: "2 minutes ago",
-    views: 1,
-    comment: 2,
-    rating: 5,
-  },
-  {
-    id: 2,
-    title: "Second Video",
-    createdAt: "2 minutes ago",
-    views: 59,
-    comment: 2,
-    rating: 5,
-  },
-  {
-    id: 3,
-    title: "Third Video",
-    createdAt: "2 minutes ago",
-    views: 59,
-    comment: 2,
-    rating: 5,
-  },
-];
+// mockup
+// const videos = [
+//   {
+//     id: 1,
+//     title: "First Video",
+//     createdAt: "2 minutes ago",
+//     views: 1,
+//     comment: 2,
+//     rating: 5,
+//   },
+//   {
+//     id: 2,
+//     title: "Second Video",
+//     createdAt: "2 minutes ago",
+//     views: 59,
+//     comment: 2,
+//     rating: 5,
+//   },
+//   {
+//     id: 3,
+//     title: "Third Video",
+//     createdAt: "2 minutes ago",
+//     views: 59,
+//     comment: 2,
+//     rating: 5,
+//   },
+// ];
 
-export const trending = (req, res) => {
-  res.render("home", { pageTitle: "Home", videos });
+export const home = async (req, res) => {
+  // then // catch 비동기 함수
+  try {
+    const videos = await Video.find({});
+    res.render("home", { pageTitle: "Home", videos });
+  } catch (error) {
+    return res.render("server-error", { error });
+  }
+
+  // videoModel
+  //   .find()
+  //   .then((videos) => {
+  //     console.log("videos", videos);
+  //     res.render("home", { pageTitle: "Home", videos: [] });
+  //   })
+  //   .catch((error) => {
+  //     console.log("error", error);
+  //   });
+  // console.log("start");
 };
 export const search = (req, res) => res.send("Search Videos");
 export const watch = (req, res) => {
@@ -62,20 +81,38 @@ export const postEdit = (req, res) => {
 export const getUpload = (req, res) => {
   return res.render("upload", { pageTitle: "Upload Video" });
 };
-export const postUpload = (req, res) => {
-  console.log(req.body.title);
-  const { title } = req.body;
-  const newVideo = {
-    id: videos.length + 1,
+
+export const postUpload = async (req, res) => {
+  const { title, description, hashtags } = req.body;
+
+  // const newVideo = {
+  //   id: videos.length + 1,
+  //   title,
+  //   createdAt: "Just Now",
+  //   views: 0,
+  //   comment: 0,
+  //   rating: 0,
+  // };
+  // videos.push(newVideo);
+
+  const video = new Video({
     title,
-    createdAt: "Just Now",
-    views: 0,
-    comment: 0,
-    rating: 0,
-  };
-  videos.push(newVideo);
+    description,
+    createdAt: Date.now(),
+    hashtags: hashtags.split(",").map((word) => `#${word}`),
+    meta: {
+      views: 0,
+      rating: 0,
+    },
+  });
+
+  console.log(video);
+
+  const dbVideo = await video.save();
+  console.log(dbVideo);
   return res.redirect("/");
 };
+
 export const deletevideo = (req, res) => {
   console.log(req.params);
 
