@@ -15,11 +15,11 @@ const videoRouter = express.Router();
 // 정규표현식 (\\d+) => 숫자만 허용
 videoRouter.route("/upload").get(getUpload).post(postUpload);
 // videoRouter.get("/upload", upload);
-videoRouter.route("/:id(\\d+)").get(watch); // get과 같은 개념
+videoRouter.route("/:id([0-9a-f]{24})").get(watch); // get과 같은 개념
 // videoRouter.get("/:id(\\d+)/edit", getEdit);
 // videoRouter.post("/:id(\\d+)/edit", postEdit);
 // 메서드 체이닝
-videoRouter.route("/:id(\\d+)/edit").get(getEdit).post(postEdit);
-videoRouter.get("/:id(\\d+)/delete", deletevideo);
+videoRouter.route("/:id([0-9a-f]{24})/edit").get(getEdit).post(postEdit);
+videoRouter.get("/:id([0-9a-f]{24})/delete", deletevideo);
 
 export default videoRouter;
