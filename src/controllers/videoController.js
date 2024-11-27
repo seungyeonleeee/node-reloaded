@@ -32,7 +32,7 @@ import Video, { formHashtags } from "../models/video";
 export const home = async (req, res) => {
   // then // catch 비동기 함수
   try {
-    const videos = await Video.find({});
+    const videos = await Video.find({}).sort({ createdAt: "desc" });
     // Video.find({}) : Video의 내부의 함수를 조건없이 찾아와라
     res.render("home", { pageTitle: "Home", videos });
   } catch (error) {
@@ -51,7 +51,28 @@ export const home = async (req, res) => {
   // console.log("start");
 };
 
-export const search = (req, res) => res.send("Search Videos");
+export const search = async (req, res) => {
+  // console.log(req.query);
+  const { keyword } = req.query;
+  // console.log(keyword);
+
+  let videos = [];
+  // 쿼리스트링이 있을 때만 videos 주겠다
+  if (keyword) {
+    videos = await Video.find({
+      title: {
+        $regex: new RegExp(keyword, "i"),
+        // $regex : mongoose 정규표현식
+        // `^${keyword}$`
+      },
+    });
+  }
+
+  return res.render("Search", {
+    pageTitle: "Search",
+    videos,
+  });
+};
 
 export const watch = async (req, res) => {
   // req => 파라미터 값 가져올 수 있음
@@ -116,7 +137,7 @@ export const postEdit = async (req, res) => {
   await Video.findByIdAndUpdate(id, {
     title,
     description,
-    hashtags: formHashtags(hashtags),
+    hashtags: Video.formatHashtags(hashtags),
   });
 
   // 수정이 완료된 이후 watch로 가야됨
@@ -160,7 +181,7 @@ export const postUpload = async (req, res) => {
       title,
       description,
       // createdAt: Date.now().toLocaleString(),
-      hashtags: formHashtags(hashtags),
+      hashtags: Video.formatHashtags(hashtags),
       // meta: {
       //   views: 0,
       //   rating: 0,
@@ -177,8 +198,12 @@ export const postUpload = async (req, res) => {
   }
 };
 
-export const deletevideo = (req, res) => {
-  console.log(req.params);
+export const deletevideo = async (req, res) => {
+  // console.log(req.params);
+  const { id } = req.params;
+  // console.log(id);
+  await Video.findByIdAndDelete(id);
+  // findByIdAndDelete() : mongoDB 안에 있는 데이터를 ID값을 기준으로 찾아서 자동으로 삭제해주는 미들웨어 함수
 
-  return res.send("Delete Videos");
+  return res.redirect("/");
 };

@@ -2,13 +2,13 @@ import mongoose from "mongoose";
 
 // 커스텀 함수
 // findByIdAndUpdate는 pre를 못써서
-export const formHashtags = (hashtags) => {
-  return hashtags
-    .split(",")
-    .map((word) =>
-      word.startsWith("#") ? `${word} 박필립스` : `#${word} 박필립스`
-    );
-};
+// export const formHashtags = (hashtags) => {
+//   return hashtags
+//     .split(",")
+//     .map((word) =>
+//       word.startsWith("#") ? `${word} 박필립스` : `#${word} 박필립스`
+//     );
+// };
 
 const videoSchema = new mongoose.Schema({
   title: {
@@ -40,5 +40,24 @@ const videoSchema = new mongoose.Schema({
 //     .map((word) => (word.startsWith("#") ? word : `#${word}`));
 // });
 
+videoSchema.static("formatHashtags", (hashtags) => {
+  return hashtags
+    .replace(/\s/g, "")
+    .split(",")
+    .map((word) => (word.startsWith("#") ? `${word}` : `#${word}`));
+});
+
 const Video = mongoose.model("Video", videoSchema);
 export default Video;
+
+// export const formHashtags = (hashtags) => {
+//   return hashtags
+//     .replace(/\s/g, "")
+//     .split(",")
+//     .map((tag) =>
+//       tag.startsWith("#")
+//         ? tag
+//         : `
+// #${tag}`
+//     );
+// };
