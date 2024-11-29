@@ -5,6 +5,16 @@ export const postJoin = async (req, res) => {
   // console.log(req.body);
   const { email, username, password, name, location } = req.body;
 
+  // 중복값이 입력되면 서버 튕김 막기
+  const pageTitle = "Join";
+  const exists = await User.exists({ $or: [{ username }, { email }] });
+  if (exists) {
+    return res.render("join", {
+      pageTitle,
+      errorMessage: `This username/email is already taken.`,
+    });
+  }
+
   await User.create({
     email,
     username,
