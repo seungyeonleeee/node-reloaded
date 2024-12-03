@@ -2,18 +2,24 @@ doctype html
 html(lang="ko")
   head 
     <link rel="stylesheet" href="https://unpkg.com/mvp.css"> 
-    title #{pageTitle} | Youtube
+    title #{pageTitle} | #{siteName}
     //- 변수값을 컨트롤러에서 정의
   body
-    header
+    header 
       nav
         ul
           li 
             a(href="/") Home
-          li
-            a(href="/login") Login
-          li
-            a(href="/join") Join
+          if loggedIn 
+            li
+              a(href="/logout") Logout
+            li
+              a(href="/my-profile") #{loggedInUser.name}의 Profile
+          else 
+            li 
+              a(href="/login") Login
+            li
+              a(href="/join") Join
           li
             a(href="/videos/upload") Upload Video
           li

@@ -87,8 +87,9 @@ export const watch = async (req, res) => {
   // console.log(video);
 
   if (!video) {
-    return res.render("404", { pageTitle: "Video not found." });
+    return res.status(404).render("404", { pageTitle: "Video not found." });
   }
+  // status(404) : 요청한 페이지 찾을 수 없음
 
   return res.render("watch", { pageTitle: video.title, video });
 };
@@ -98,7 +99,7 @@ export const getEdit = async (req, res) => {
   const video = await Video.findById(id);
 
   if (!video) {
-    return res.render("404", { pageTitle: "Video not found." });
+    return res.status(404).render("404", { pageTitle: "Video not found." });
   }
 
   return res.render("edit", { pageTitle: `Edit : ${video.title}`, video });
