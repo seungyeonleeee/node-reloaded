@@ -1,4 +1,5 @@
 // setting 역할
+import "dotenv/config";
 import "./db";
 import "./models/video";
 import "./models/user";
