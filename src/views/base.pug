@@ -4,27 +4,34 @@ html(lang="ko")
     <link rel="stylesheet" href="https://unpkg.com/mvp.css"> 
     title #{pageTitle} | #{siteName}
     //- 변수값을 컨트롤러에서 정의
+    style.
+      nav ul {
+          display: flex;
+          gap: 4px;
+        }
   body
     header 
+      h1=pageTitle
       nav
-        ul
-          li 
+        ul 
+          li
             a(href="/") Home
-          if loggedIn 
+          if loggedIn
+            li 
+              a(href="/users/logout") LogOut 
             li
-              a(href="/logout") Logout
+              a(href="/videos/upload") Upload Video
             li
               a(href="/my-profile") #{loggedInUser.name}의 Profile
-          else 
-            li 
+            li
+              a(href="/users/edit") Edit Profile
+          else
+            li
               a(href="/login") Login
             li
               a(href="/join") Join
           li
-            a(href="/videos/upload") Upload Video
-          li
             a(href="/search") Search
-      h1=pageTitle
-    main 
+    main
       block content
-    include partials/footer
+    include partials/footer.pug

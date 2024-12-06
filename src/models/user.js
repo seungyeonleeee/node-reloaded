@@ -8,6 +8,11 @@ const userSchema = new mongoose.Schema({
     unique: true,
     // unique: true : 중복 X
   },
+  avatarUrl: String,
+  socialOnly: {
+    type: Boolean,
+    default: false,
+  },
   username: {
     type: String,
     required: true,
@@ -15,7 +20,7 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true,
+    // required: true,
   },
   name: {
     type: String,

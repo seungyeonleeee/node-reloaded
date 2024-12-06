@@ -43,14 +43,61 @@ export const postJoin = async (req, res) => {
     });
   }
 };
+
+export const getEdit = (req, res) => {
+  return res.render("edit-profile", { pageTitle: "Edit Profile" });
+};
+export const postEdit = async (req, res) => {
+  const {
+    session: {
+      user: { _id, avatarUrl, email: sessionEmail, username: sessionUsername },
+    },
+    body: { name, email, username, location },
+    file,
+  } = req;
+
+  console.log(file);
+
+  const usernameExists =
+    username !== sessionUsername ? await User.exists({ username }) : undefined;
+
+  const emailExists =
+    email !== sessionEmail ? await User.exists({ email }) : undefined;
+
+  if (usernameExists || emailExists) {
+    return res.status(400).render("edit-profile", {
+      pageTitle: "Edit Profile",
+      usernameErrorMessage: usernameExists
+        ? "This username is already taken"
+        : 0,
+      emailErrorMessage: emailExists ? "This email is already taken" : 0,
+    });
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(
+    _id,
+    {
+      avatarUrl: file ? file.path.replace(/\\/g, "/") : avatarUrl,
+      // window에서는 "\\"로 나와서 정규표현식으로 "/"로 바꿔주기
+      name,
+      email,
+      username,
+      location,
+    },
+    { new: true }
+  );
+
+  req.session.user = updatedUser;
+  return res.redirect("/");
+};
+
 export const getLogin = (req, res) =>
   res.render("login", { pageTitle: "Login" });
-
 export const postLogin = async (req, res) => {
   const { username, password } = req.body;
   const pageTitle = "Login";
 
-  const user = await User.findOne({ username });
+  const user = await User.findOne({ username, socialOnly: false });
   // findOne : 찾아오기
   if (!user) {
     return res.status(400).render("login", {
@@ -76,6 +123,7 @@ export const postLogin = async (req, res) => {
 
   return res.redirect("/");
 };
+
 export const startGithubLogin = (req, res) => {
   const baseUrl = "https://github.com/login/oauth/authorize";
   const config = {
@@ -140,12 +188,72 @@ export const finishGithubLogin = async (req, res) => {
       req.session.loggedIn = true;
       req.session.user = existingUser;
       return res.redirect("/");
+    } else {
+      const user = await User.create({
+        email: emailObj.email,
+        avatarUrl: userData.avatar_url,
+        socialOnly: true,
+        username: userData.login,
+        password: "",
+        name: userData.name,
+        location: userData.location,
+      });
+      req.session.loggedIn = true;
+      req.session.user = user;
+      return res.redirect("/login");
     }
   } else {
     return res.redirect("/login");
   }
 };
-export const logout = (req, res) => res.send("Logout");
+
+export const logout = (req, res) => {
+  req.session.destroy();
+  return res.redirect("/");
+};
+
+export const getChangePassword = (req, res) => {
+  if (req.session.user.socialOnly === true) {
+    // github로 로그인 한 유저는 password 변경이 안되게
+    return res.redirect("/");
+  }
+
+  return res.render("users/change-password", { pageTitle: "Change Password" });
+};
+export const postChangePassword = async (req, res) => {
+  const {
+    session: {
+      user: { _id },
+    },
+    body: { oldPassword, newPassword, newPasswordConfirmation },
+  } = req;
+  const user = await User.findById(_id);
+
+  const ok = await bcrypt.compare(oldPassword, user.password);
+  // 기존 비밀번호가 다를 때
+  if (!ok) {
+    return res.status(400).render("users/change-password", {
+      pageTitle: "Change Password",
+      errorMessage: "The Current Password is incorrect",
+    });
+  }
+
+  // 새로운 비밀번호가 동일하지 않을 때
+  if (newPassword !== newPasswordConfirmation) {
+    return res.status(400).render("users/change-password", {
+      pageTitle: "Change Password",
+      errorMessage: "The Password does not match the confirmation",
+    });
+  }
+
+  console.log("Old Password", user.password);
+  user.password = newPassword;
+  console.log("New unhashed Password", user.password);
+  await user.save();
+  console.log("New Password", user.password);
+  req.session.user.password = user.password;
+
+  return res.redirect("/users/logout");
+};
+
 export const see = (req, res) => res.send("See");
-export const edit = (req, res) => res.send("Edit");
-export const remove = (req, res) => res.send("Remove");

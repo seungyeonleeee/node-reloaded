@@ -150,6 +150,7 @@ export const getUpload = (req, res) => {
 };
 
 export const postUpload = async (req, res) => {
+  const { file } = req;
   const { title, description, hashtags } = req.body;
 
   // const newVideo = {
@@ -188,6 +189,7 @@ export const postUpload = async (req, res) => {
       //   rating: 0,
       // },
       // video.js에서 default값으로 정의함
+      fileUrl: file.path.replace(/\\/g, "/"),
     });
     return res.redirect("/");
   } catch (error) {
@@ -199,7 +201,7 @@ export const postUpload = async (req, res) => {
   }
 };
 
-export const deletevideo = async (req, res) => {
+export const deleteVideo = async (req, res) => {
   // console.log(req.params);
   const { id } = req.params;
   // console.log(id);

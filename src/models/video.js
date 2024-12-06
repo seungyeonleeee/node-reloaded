@@ -25,6 +25,10 @@ const videoSchema = new mongoose.Schema({
     views: { type: Number, required: true, default: 0 },
     rating: { type: Number, required: true, default: 0 },
   },
+  fileUrl: {
+    type: String,
+    required: true,
+  },
 });
 
 // videoSchema.pre("save", async function () {
@@ -42,9 +46,8 @@ const videoSchema = new mongoose.Schema({
 
 videoSchema.static("formatHashtags", (hashtags) => {
   return hashtags
-    .replace(/\s/g, "")
     .split(",")
-    .map((word) => (word.startsWith("#") ? `${word}` : `#${word}`));
+    .map((word) => (word.startsWith("#") ? word : `#${word}`));
 });
 
 const Video = mongoose.model("Video", videoSchema);
