@@ -1,5 +1,6 @@
 import { response } from "express";
 import Video, { formHashtags } from "../models/video";
+import User from "../models/user";
 
 // mockup
 // const videos = [
@@ -77,14 +78,16 @@ export const search = async (req, res) => {
 export const watch = async (req, res) => {
   // req => 파라미터 값 가져올 수 있음
   // console.log(req.params.id);
-
   const { id } = req.params;
   // const video = videos[id - 1];
   // console.log(id); // 6743fa54efed3d7ba4d11b45
-
   // id로 해당 데이터 찾아오기
-  const video = await Video.findById(id);
+  const video = await Video.findById(id).populate("owner");
   // console.log(video);
+  // const owner = await User.findById(video.owner);
+  // user에서 준 값을 다시 user로 가서 찾아야 함 => 비효율적
+  // populate : 참조하고 있는 요소의 값도 찾아와줌
+  // console.log(video); // owner값도 들어옴
 
   if (!video) {
     return res.status(404).render("404", { pageTitle: "Video not found." });
@@ -150,8 +153,11 @@ export const getUpload = (req, res) => {
 };
 
 export const postUpload = async (req, res) => {
-  const { file } = req;
+  const { path } = req.file;
   const { title, description, hashtags } = req.body;
+  const {
+    user: { _id },
+  } = req.session;
 
   // const newVideo = {
   //   id: videos.length + 1,
@@ -179,7 +185,7 @@ export const postUpload = async (req, res) => {
 
   try {
     // create : 생성 + save
-    await Video.create({
+    const newVideo = await Video.create({
       title,
       description,
       // createdAt: Date.now().toLocaleString(),
@@ -189,8 +195,14 @@ export const postUpload = async (req, res) => {
       //   rating: 0,
       // },
       // video.js에서 default값으로 정의함
-      fileUrl: file.path.replace(/\\/g, "/"),
+      fileUrl: path.replace(/\\/g, "/"),
+      owner: _id,
     });
+
+    const user = await User.findById(_id);
+    user.videos.push(newVideo);
+    user.save();
+
     return res.redirect("/");
   } catch (error) {
     console.error(error);

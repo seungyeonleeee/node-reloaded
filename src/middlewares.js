@@ -10,7 +10,7 @@ export const localMiddleware = (req, res, next) => {
   next();
 };
 
-//로그인이 되지 않았는데 로그인을 했을때만 사용할 수 있는 기능들을 막자.
+// 로그인이 되지 않았는데 로그인을 했을때만 사용할 수 있는 기능들을 막자.
 export const protectorMiddleware = (req, res, next) => {
   if (req.session.loggedIn) {
     return next();

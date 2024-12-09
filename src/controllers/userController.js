@@ -1,5 +1,6 @@
 import User from "../models/user";
 import bcrypt from "bcrypt";
+import Video from "../models/video";
 
 export const getJoin = (req, res) => res.render("Join", { pageTitle: "Join" });
 export const postJoin = async (req, res) => {
@@ -256,4 +257,19 @@ export const postChangePassword = async (req, res) => {
   return res.redirect("/users/logout");
 };
 
-export const see = (req, res) => res.send("See");
+export const see = async (req, res) => {
+  const { id } = req.params;
+  // console.log(id); // user id
+  // 해당 id에 맞는 mongoDB의 user 정보 찾아오기
+  const user = await User.findById(id).populate("videos");
+  // console.log(user);
+
+  if (!user) {
+    return res.status(400).render("404", { pageTitle: "User not Found." });
+  }
+
+  return res.render("users/profile", {
+    pageTitle: `${user.name.toLocaleUpperCase()}'s Profile`,
+    user,
+  });
+};

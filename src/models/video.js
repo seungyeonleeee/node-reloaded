@@ -29,6 +29,11 @@ const videoSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  owner: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: "User",
+  },
 });
 
 // videoSchema.pre("save", async function () {
