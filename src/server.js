@@ -56,9 +56,10 @@ app.use(
 //   return res.send(`${req.session.id} ${req.session.specialUser}`);
 // });
 app.use(localMiddleware);
+app.use("/uploads", express.static("uploads"));
+app.use("/assets", express.static("assets"));
 app.use("/", rootRouter);
 app.use("/users", userRouter);
 app.use("/videos", videoRouter);
-app.use("/uploads", express.static("uploads"));
 
 export default app;

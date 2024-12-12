@@ -33,7 +33,9 @@ import User from "../models/user";
 export const home = async (req, res) => {
   // then // catch 비동기 함수
   try {
-    const videos = await Video.find({}).sort({ createdAt: "desc" });
+    const videos = await Video.find({})
+      .sort({ createdAt: "desc" })
+      .populate("owner");
     // Video.find({}) : Video의 내부의 함수를 조건없이 찾아와라
     res.render("home", { pageTitle: "Home", videos });
   } catch (error) {
@@ -99,10 +101,18 @@ export const watch = async (req, res) => {
 
 export const getEdit = async (req, res) => {
   const { id } = req.params;
+  const {
+    user: { _id },
+  } = req.session;
   const video = await Video.findById(id);
 
   if (!video) {
     return res.status(404).render("404", { pageTitle: "Video not found." });
+  }
+
+  // console.log(typeof video.owner, typeof _id); // object string
+  if (String(video.owner) !== String(_id)) {
+    return res.status(403).redirect("/");
   }
 
   return res.render("edit", { pageTitle: `Edit : ${video.title}`, video });
@@ -115,6 +125,10 @@ export const postEdit = async (req, res) => {
   // app.use(express.urlencoded({ extended: true })); server에서 인코딩
   // { title: 'test' } 찾아 옴
   // const { title } = req.body;
+
+  const {
+    user: { _id },
+  } = req.session;
 
   // 수정된 데이터
   // console.log(req.body);
@@ -143,6 +157,10 @@ export const postEdit = async (req, res) => {
     description,
     hashtags: Video.formatHashtags(hashtags),
   });
+
+  if (String(video.owner) !== String(_id)) {
+    return res.status(403).redirect("/");
+  }
 
   // 수정이 완료된 이후 watch로 가야됨
   return res.redirect(`/videos/${id}`);
@@ -217,6 +235,19 @@ export const deleteVideo = async (req, res) => {
   // console.log(req.params);
   const { id } = req.params;
   // console.log(id);
+  const {
+    user: { _id },
+  } = req.session;
+  const video = await Video.findById(id);
+
+  if (!video) {
+    return res.status(404).render("404", { pageTitle: "Video not Found." });
+  }
+
+  if (String(video.owner) !== String(_id)) {
+    return res.status(403).redirect("/");
+  }
+
   await Video.findByIdAndDelete(id);
   // findByIdAndDelete() : mongoDB 안에 있는 데이터를 ID값을 기준으로 찾아서 자동으로 삭제해주는 미들웨어 함수
 

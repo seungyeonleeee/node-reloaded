@@ -33,7 +33,11 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.pre("save", async function () {
-  this.password = await bcrypt.hash(this.password, 5);
+  // 예외조항처리
+  // 비디오 업로드를 했을때도 save가 돼서 비번이 해싱됨으로 인해서 기존의 비번이 달라지게 되는 경우 마긱 위해서
+  if (this.isModified("password")) {
+    this.password = await bcrypt.hash(this.password, 5);
+  }
 });
 
 const User = mongoose.model("User", userSchema);
