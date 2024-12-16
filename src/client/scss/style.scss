@@ -6,9 +6,13 @@
 @import "./components/footer";
 @import "./components/video";
 @import "./components/shared";
+@import "./components/form";
+@import "./components/social-login";
 // Screens
 @import "./screens/home";
 @import "./screens/search";
+@import "./screens/profile";
+@import "./screens/edit-profile";
 
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,

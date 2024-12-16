@@ -4,7 +4,8 @@ include mixins/video
 block content
   form(mothod="GET").search__form
     input(type="text" name="keyword" placeholder="Search By Title")
-    input(type="submit" value="Search Now")
+    button 
+      i.fa-solid.fa-magnifying-glass
 
   div.video__grid
     each video in videos

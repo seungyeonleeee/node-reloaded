@@ -68,7 +68,8 @@ export const search = async (req, res) => {
         // $regex : mongoose 정규표현식
         // `^${keyword}$`
       },
-    });
+    }).populate("owner");
+    // populate : 참조해온 값까지 가져올 때 사용
   }
 
   return res.render("Search", {

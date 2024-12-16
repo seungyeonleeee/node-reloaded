@@ -7,14 +7,18 @@ header
         a(href="/search")
           i.fa-solid.fa-magnifying-glass
       if loggedIn
-        li 
-          a(href="/users/logout") Logout 
         li
           a(href="/videos/upload") Upload Video
         li
-          a(href=`/users/${loggedInUser._id}`) My Profile
-        li
           a(href="/users/edit") Edit Profile
+        li 
+          a(href="/users/logout") Logout 
+        li
+          a(href=`/users/${loggedInUser._id}`)
+            if !loggedInUser.avatarUrl
+              span 😊
+            else
+              img(src="/" + loggedInUser.avatarUrl, alt="profile").header__avatar
       else
         li
           a(href="/join") Join

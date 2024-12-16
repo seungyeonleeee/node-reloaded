@@ -261,7 +261,15 @@ export const see = async (req, res) => {
   const { id } = req.params;
   // console.log(id); // user id
   // 해당 id에 맞는 mongoDB의 user 정보 찾아오기
-  const user = await User.findById(id).populate("videos");
+  const user = await User.findById(id).populate({
+    path: "videos",
+    // double popluate
+    // videos 안에 모든 정보를 가져오지 않고 owner만 조회
+    populate: {
+      path: "owner",
+      model: "User",
+    },
+  });
   // console.log(user);
 
   if (!user) {
