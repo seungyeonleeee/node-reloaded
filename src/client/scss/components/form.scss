@@ -23,7 +23,7 @@ input[type="submit"],
   display: block;
   padding: 12px 20px;
   text-align: center;
-  background: rgba($color: $red, $alpha: 0.9);
+  background: rgba($color: $red, $alpha: 0.9) !important;
   border-radius: 5px;
   cursor: pointer;
 }

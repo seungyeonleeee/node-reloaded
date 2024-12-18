@@ -6,6 +6,7 @@ import videoRouter from "./routers/videoRouter";
 import session from "express-session";
 import { localMiddleware } from "./middlewares";
 import MongoStore from "connect-mongo";
+import apiRouter from "./routers/apiRouter";
 
 const app = express();
 const logger = morgan("dev");
@@ -61,5 +62,6 @@ app.use("/assets", express.static("assets"));
 app.use("/", rootRouter);
 app.use("/users", userRouter);
 app.use("/videos", videoRouter);
+app.use("/api", apiRouter); // "/api"가 아니고 해당 파라미터에 도착했다는 값만 체크할것임
 
 export default app;
