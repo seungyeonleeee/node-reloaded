@@ -1,7 +1,7 @@
 const startBtn = document.getElementById("startBtn");
 const video = document.getElementById("preview");
 
-// 녹화중지지
+// 녹화중지
 const handleStop = () => {
   startBtn.innerText = "Start Recoding";
 
@@ -15,7 +15,7 @@ const handleStart = () => {
   startBtn.removeEventListener("click", handleStart);
   startBtn.addEventListener("click", handleStop);
 
-  const recorder = new MediaRecorder();
+  const recorder = new MediaRecorder(stream);
 };
 const init = async () => {
   const stream = await navigator.mediaDevices.getUserMedia({
